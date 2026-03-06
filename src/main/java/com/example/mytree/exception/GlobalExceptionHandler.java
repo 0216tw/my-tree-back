@@ -27,6 +27,11 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage());
 	}
 
+	@ExceptionHandler(PostNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handlePostNotFound(PostNotFoundException exception) {
+		return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage());
+	}
+
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException exception) {
 		return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage());

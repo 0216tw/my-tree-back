@@ -37,7 +37,7 @@ class UserControllerIntegrationTest {
 	}
 
 	@Test
-	void signupStoresUserWithHashedPasswordAndIpv4Address() throws Exception {
+	void signupStoresUserWithPlainPasswordAndIpv4Address() throws Exception {
 		mockMvc.perform(jsonRequest(
 				post("/api/users/signup"),
 				"""
@@ -58,8 +58,7 @@ class UserControllerIntegrationTest {
 
 		User storedUser = userRepository.findByUserId("hong01");
 		assertThat(storedUser).isNotNull();
-		assertThat(storedUser.getPassword()).isNotEqualTo("pw1234");
-		assertThat(storedUser.getPassword()).startsWith("$2");
+		assertThat(storedUser.getPassword()).isEqualTo("pw1234");
 		assertThat(storedUser.getCreatedAt()).isNotNull();
 		assertThat(storedUser.getIpAddress()).isEqualTo("127.0.0.1");
 	}

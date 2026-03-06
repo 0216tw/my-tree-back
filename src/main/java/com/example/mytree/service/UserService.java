@@ -12,7 +12,6 @@ import com.example.mytree.exception.AuthenticationFailedException;
 import com.example.mytree.exception.DuplicateUserException;
 import com.example.mytree.exception.UserNotFoundException;
 import com.example.mytree.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
 	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
 
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Transactional
@@ -35,7 +32,7 @@ public class UserService {
 
 		User user = new User();
 		user.setUserId(request.userId());
-		user.setPassword(passwordEncoder.encode(request.password()));
+		user.setPassword(request.password());
 		user.setName(request.name());
 		user.setIpAddress(ipAddress);
 
@@ -47,7 +44,7 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public LoginResponse login(UserLoginRequest request) {
 		User user = loadExistingUser(request.userId());
-		if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+		if (!request.password().equals(user.getPassword())) {
 			throw new AuthenticationFailedException("Invalid userId or password");
 		}
 
@@ -70,7 +67,7 @@ public class UserService {
 	@Transactional
 	public UserResponse updateUser(String userId, UserUpdateRequest request) {
 		User existingUser = loadExistingUser(userId);
-		existingUser.setPassword(passwordEncoder.encode(request.password()));
+		existingUser.setPassword(request.password());
 		existingUser.setName(request.name());
 
 		userRepository.updateUser(existingUser);
